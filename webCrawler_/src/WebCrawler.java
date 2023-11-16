@@ -7,26 +7,24 @@ import java.util.*;
 
 
 public class WebCrawler {
-    private static final int MAX_DEPTH = 3;
-    private Set<String> visitedURLs;
+    private static final int profondita_MAX = 3;
+    private Set<String> visitedURLs;    //Set<> garantisce elementi unici, è un'interfaccia
 
     public WebCrawler() {
         this.visitedURLs = new HashSet<>();
     }
 
-    public void crawl(String seedURL, int depth) {
-        if (depth <= MAX_DEPTH) {
-            System.out.println("Depth: " + depth + " - Visiting: " + seedURL);
-
+    public void crawl(String seedURL, int profondita) {
+        if (profondita <= profondita_MAX) {
+            System.out.println("Profondità: " + profondita + " - Link visitato: " + seedURL);
             try {
-                Document document = Jsoup.connect(seedURL).get();
+                Document document = Jsoup.connect(seedURL).get();   //creo connessione al link passato ed ottengo il documento html
                 visitedURLs.add(seedURL);
-
-                Elements links = document.select("a[href]");
+                Elements links = document.select("a[href]");    //seleziona i link presenti nel documento con tag <a>
                 for (Element link : links) {
-                    String nextURL = link.absUrl("href");
+                    String nextURL = link.absUrl("href");   //ottengo l'URL assoluto del link
                     if (!visitedURLs.contains(nextURL)) {
-                        crawl(nextURL, depth + 1);
+                        crawl(nextURL, profondita + 1);
                     }
                 }
             } catch (IOException e) {
@@ -35,10 +33,11 @@ public class WebCrawler {
         }
     }
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         WebCrawler webCrawler = new WebCrawler();
-
-        // Inserisci il tuo seed URL qui
-        String seedURL = "https://example.com";
-        webCrawler.crawl(seedURL, 1);
+        System.out.println("Quale link vuoi visitare: ");
+        String seedUrl = scanner.nextLine();
+        webCrawler.crawl(seedUrl, 1);
+        scanner.close();
     }
 }
